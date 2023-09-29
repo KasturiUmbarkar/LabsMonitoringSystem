@@ -5,10 +5,10 @@ import { getStoredData, storeData } from "../CommonFunctions";
 import Input from "../formElements/Input";
 import { useForm } from "../formElements/Form-hook";
 import { AuthContext } from "../AuthContext";
-import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import loginLogo from "../../assets/login-logo.png";
 
+import "react-toastify/dist/ReactToastify.css";
 import "./Form.css";
 
 const Form = ({ signUp = false }) => {
@@ -27,13 +27,16 @@ const Form = ({ signUp = false }) => {
       password: {
         value: "",
         isValid: false,
-      }
+      },
     },
     false
   );
 
   const buttonLabel = signUp ? "Sign up" : "login";
 
+  /**
+   * called on click of Signup/Login button to validate inputs to redirect or throw error accordingly
+   */
   const handleButtonClick = (event) => {
     event.preventDefault();
     const users = getStoredData("users") || [];
@@ -131,11 +134,11 @@ const Form = ({ signUp = false }) => {
             ) : (
               <p className="text-center">
                 Not an existing user? Please{" "}
-                <NavLink to={"/signup"}>sign up!!</NavLink>
+                <NavLink to="/signup">sign up!!</NavLink>
               </p>
             )}
           </div>
-          <ToastContainer autoClose={1000} />
+          <ToastContainer autoClose={3000} />
         </Box>
       </Grid>
     </Grid>

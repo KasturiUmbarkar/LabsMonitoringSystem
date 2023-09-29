@@ -18,6 +18,11 @@ function App() {
     getStoredData("isUserLoggedIn") || false
   );
 
+/**
+ * setUserDetails stores the registered/logged in user in localstorage
+ * @param {object} userDetails - user who is registered/logged in.
+ * @param {array} users - all the users stored in localstorage
+ */
   const setUserDetails = (userDetails, users) => {
     const usersStored = getStoredData("users");
     setUser(userDetails);

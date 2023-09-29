@@ -2,12 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import { Avatar, Box, Button, Drawer, TextField } from "@mui/material";
-import SwapVertOutlinedIcon from "@mui/icons-material/SwapVertOutlined";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import UserDetails from "./UserDetails";
 import { AuthContext } from "../commonComponents/AuthContext";
 import { useNavigate } from "react-router-dom";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
+import { ToastContainer, toast } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
 
 const Dashboard = () => {
   const auth = useContext(AuthContext);
@@ -28,7 +30,7 @@ const Dashboard = () => {
       renderCell: (params) => (
         <div
           style={{ cursor: "pointer", display: "contents", fontWeight: "bold" }}
-          onClick={() => handleColumnClick(params)}
+          onClick={() => handleNameColumnClick(params)}
         >
           <Avatar
             src={params.row.image}
@@ -84,11 +86,10 @@ const Dashboard = () => {
     {
       field: "menu",
       headerName: "",
-
       renderCell: (params) => (
         <MoreVertRoundedIcon
           onClick={() => {
-            handleColumnClick(params);
+            handleNameColumnClick(params);
           }}
           sx={{ cursor: "pointer" }}
         />
@@ -96,57 +97,71 @@ const Dashboard = () => {
     },
   ];
 
-  const handleColumnClick = (params) => {
+  /**
+   * handleNameColumnClick opens the user details drawer on click of user name
+   * @param {object} param - object with row(selected row) data
+   */
+  const handleNameColumnClick = (params) => {
     setOpenDrawer(true);
     setSelectedRow(params.row);
   };
 
+  /**
+   * calls an api to fetch users data on mounting of component
+   */
   useEffect(() => {
-    axios.get("https://dummyjson.com/users").then((res) => {
-      const rows = res.data.users.map((user) => {
-        return {
-          id: user.id,
-          name: `${user.firstName} ${user.lastName}`,
-          userId: user.id * 8949,
-          role: [
-            "Admin",
-            "Super admin",
-            "Supervisor",
-            "Manager",
-            "Fleet Manager",
-            "Driver",
-          ]
-            .slice(user.id % 6, 6)
-            .join(),
-          lastLogin: new Date(),
-          image: user.image,
-        };
+    axios
+      .get("https://dummyjson.com/users")
+      .then((res) => {
+        const rows = res.data.users.map((user) => {
+          return {
+            id: user.id,
+            name: `${user.firstName} ${user.lastName}`,
+            userId: user.id * 8949,
+            role: [
+              "Admin",
+              "Super admin",
+              "Supervisor",
+              "Manager",
+              "Fleet Manager",
+              "Driver",
+            ]
+              .slice(user.id % 6, 6)
+              .join(),
+            lastLogin: new Date(),
+            image: user.image,
+          };
+        });
+        setRowData(rows);
+        setFilteredRows({ filteredRows: rows });
+      })
+      .catch(() => {
+        toast.error("Something went wrong! Please try again!!");
       });
-      setRowData(rows);
-      setFilteredRows({ filteredRows: rows });
-    });
   }, []);
 
+  /**
+   * hupdate user details in localstorage on logout and navigate to login
+   */
   const handleLogOut = (event) => {
     event.preventDefault();
     auth.setUserDetails({});
     navigate("/");
   };
 
-  const handleSearch = (event) => {
-    const { value } = event.target;
-    const filteredRows = value ? filterRows.filteredRows: rowData
-    setFilteredRows({filteredRows, filterValue: value });
+  /**
+   * filter the users as per provided value
+   */
+  const handleSearchFilter = (event) => {
+    const { value = filterRows.filterValue } = event.target;
+    const filteredRows =
+      rowData.filter(
+        (row) =>
+          row.name.toLowerCase().includes(value.toLowerCase()) ||
+          row.userId.toString().includes(value)
+      ) || [];
+    setFilteredRows({ filteredRows, filterValue: value });
   };
-
-  const handleFilter = () => {
-    const filteredRows = rowData.filter(
-      (row) =>
-        row.name.toLowerCase().includes(filterRows.filterValue.toLowerCase()) ||
-        row.userId.toString().includes(filterRows.filterValue)
-    );
-    setFilteredRows({...filterRows,filteredRows})
-  }
 
   return (
     <div className="container">
@@ -185,7 +200,7 @@ const Dashboard = () => {
           label="Search"
           variant="outlined"
           className="search-txt-field"
-          onChange={handleSearch}
+          onChange={handleSearchFilter}
           sx={{
             "& .MuiInputBase-root": {
               borderRadius: "40px",
@@ -211,7 +226,7 @@ const Dashboard = () => {
             cursor: "pointer",
             color: filterRows.filterValue ? "black" : "#9ca4b4",
           }}
-          onClick={handleFilter}
+          onClick={handleSearchFilter}
         >
           Filter
         </span>
@@ -277,6 +292,7 @@ const Dashboard = () => {
       >
         <UserDetails user={selectedRow} onClose={() => setOpenDrawer(false)} />
       </Drawer>
+      <ToastContainer autoClose={3000} />
     </div>
   );
 };

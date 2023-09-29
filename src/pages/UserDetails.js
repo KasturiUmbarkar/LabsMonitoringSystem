@@ -1,13 +1,13 @@
+import React from "react";
 import { Avatar, Button } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import React from "react";
 
 const UserDetails = ({ user, onClose }) => {
   return (
     <div>
       <div className="content-space margin-left">
-        <p>User Details</p>
+        <p className="title heading">User Details</p>
         <CloseIcon
           sx={{
             height: "20px",
@@ -26,7 +26,7 @@ const UserDetails = ({ user, onClose }) => {
             width: "70px",
             backgroundColor: "rgb(247 245 245)",
             margin: "1rem 5px",
-            border: '1px solid gray'
+            border: "1px solid gray",
           }}
         />
         <div>
@@ -35,7 +35,11 @@ const UserDetails = ({ user, onClose }) => {
           <Button
             variant="contained"
             color="success"
-            sx={{ margin: "-2rem 1rem 1rem 1rem", padding: "2px 10px", borderRadius:"15px" }}
+            sx={{
+              margin: "-2rem 1rem 1rem 1rem",
+              padding: "2px 10px",
+              borderRadius: "15px",
+            }}
           >
             Active
           </Button>
@@ -65,7 +69,8 @@ const UserDetails = ({ user, onClose }) => {
       </div>
       <p className="heading margin-left">
         {user.lastLogin.getDate()}-{user.lastLogin.getMonth()}-
-        {user.lastLogin.getFullYear()} {user.lastLogin.getHours()}:{user.lastLogin.getMinutes()}AM
+        {user.lastLogin.getFullYear()} {user.lastLogin.getHours()}:
+        {user.lastLogin.getMinutes()} AM
       </p>
       <p className="label margin-left">Last login</p>
     </div>
